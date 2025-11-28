@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function LoginPage() {
+function LoginPage({ onLogin }) {
   // Form state (controlled inputs)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,6 +33,7 @@ function LoginPage() {
       } else {
         alert("Login successful! (front-end only for now)");
         // later: redirect or set logged-in state
+        onLogin({ email });
       }
 
       setIsSubmitting(false);
