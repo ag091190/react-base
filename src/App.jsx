@@ -2,16 +2,28 @@
 import { useState } from "react";
 import { Routes, Route, Navigate, Link } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage"; // ✅ NEW
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user");
+    if (!stored) return null;
+
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return null;
+    }
+  });
 
   function handleLogin(userData) {
     setUser(userData); // e.g. { email }
+    localStorage.setItem("user", JSON.stringify(userData));
   }
 
   function handleLogout() {
     setUser(null);
+    localStorage.removeItem("user");
   }
 
   return (
@@ -46,7 +58,8 @@ function App() {
               ) : (
                 <p>
                   You are not logged in. Go to{" "}
-                  <Link to="/login">Login</Link>.
+                  <Link to="/login">Login</Link> or{" "}
+                  <Link to="/register">Register</Link>.
                 </p>
               )
             }
@@ -61,6 +74,18 @@ function App() {
                 <Navigate to="/dashboard" replace />
               ) : (
                 <LoginPage onLogin={handleLogin} />
+              )
+            }
+          />
+
+          <Route
+            path="/register"
+            element={
+              user ? (
+                // if already logged in, no need to register → dashboard
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <RegisterPage onRegister={handleLogin} />
               )
             }
           />
